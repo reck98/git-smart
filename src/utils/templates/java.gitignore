@@ -1,0 +1,14 @@
+*.class
+*.jar
+*.war
+*.nar
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.log
+build/
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+.git-smart.json

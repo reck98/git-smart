@@ -1,0 +1,10 @@
+go.work
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+.git-smart.json

@@ -1,0 +1,47 @@
+{
+  "name": "@reck98/git-smart",
+  "version": "1.1.0",
+  "description": "AI-powered Git workflow assistant that generates production-quality commit messages, summarizes code changes, and streamlines Git operations.",
+  "type": "module",
+  "bin": {
+    "git-smart": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "src/utils/templates"
+  ],
+  "scripts": {
+    "build": "tsc && copyfiles -u 2 \"src/utils/templates/**/*\" dist/utils/",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "@google/generative-ai": "^0.8.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.0",
+    "openai": "^4.40.0",
+    "ora": "^8.0.0",
+    "simple-git": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.11.0",
+    "copyfiles": "^2.4.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "ai",
+    "conventional-commits",
+    "cli"
+  ],
+  "license": "MIT"
+}

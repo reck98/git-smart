@@ -1,0 +1,7 @@
+*.gem
+.bundle/
+vendor/bundle
+.bundled_gems
+*.lock
+.env
+.git-smart.json

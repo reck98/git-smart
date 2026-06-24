@@ -1,0 +1,7 @@
+vendor/
+node_modules/
+.env
+*.log
+.phpunit.cache
+.php_cs.cache
+.git-smart.json
