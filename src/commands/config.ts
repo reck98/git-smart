@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { homedir } from 'node:os';
 import {
   loadConfig, saveConfig, saveGlobalConfig, loadGlobalConfig,
   loadLocalConfig, globalConfigPath, maskApiKey, getKeySource,
@@ -99,11 +100,22 @@ export async function showConfig(scope: 'merged' | 'global' | 'local' = 'merged'
   const hasGlobal = existsSync(globalPath);
   const hasLocal = existsSync(localPath);
 
-  const config = loadConfig();
   const globalConf = loadGlobalConfig();
   const localConf = loadLocalConfig();
+  const mergedConf = loadConfig();
 
-  console.log(chalk.cyan('\n  git-smart configuration\n'));
+  const config = scope === 'global' ? globalConf : (scope === 'local' ? (localConf || mergedConf) : mergedConf);
+
+  const scopeTitle = scope === 'global' ? 'global ' : (scope === 'local' ? 'local ' : '');
+  console.log(chalk.cyan(`\n  git-smart ${scopeTitle}configuration\n`));
+
+  if (scope === 'local' && !hasLocal) {
+    console.log(chalk.yellow('  No local configuration file (.git-smart.json) found.'));
+    console.log(chalk.dim('  Showing effective fallback configuration.\n'));
+  } else if (scope === 'global' && !hasGlobal) {
+    console.log(chalk.yellow('  No global configuration file found.'));
+    console.log(chalk.dim('  Showing default global configuration.\n'));
+  }
 
   console.log(chalk.white(`  Active provider: ${config.provider}`));
   console.log(chalk.white(`  Model: ${config.model}`));
@@ -113,7 +125,8 @@ export async function showConfig(scope: 'merged' | 'global' | 'local' = 'merged'
 
   console.log(chalk.cyan('\n  Config Source:'));
   const localDisplay = localPath.replace(/\\/g, '/').replace(process.cwd().replace(/\\/g, '/'), '.');
-  const globalDisplay = globalPath.replace(/\\/g, '~').replace(/^~?/, '~');
+  const home = homedir();
+  const globalDisplay = (globalPath.startsWith(home) ? globalPath.replace(home, '~') : globalPath).replace(/\\/g, '/');
   console.log(chalk.white(`    Local:  ${localDisplay} ${hasLocal ? chalk.green('✓') : chalk.red('(not found)')}`));
   console.log(chalk.white(`    Global: ${globalDisplay} ${hasGlobal ? chalk.green('✓') : chalk.red('(not found)')}`));
 

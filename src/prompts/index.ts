@@ -158,6 +158,13 @@ export async function promptPushToRemote(): Promise<boolean> {
   return push;
 }
 
+export const DEFAULT_MODELS: Record<Provider, string> = {
+  openrouter: 'openrouter/free',
+  openai: 'gpt-4o-mini',
+  anthropic: 'claude-3-5-haiku-20241022',
+  gemini: 'gemini-1.5-flash',
+};
+
 export interface ConfigWizardAnswers {
   provider: Provider;
   model: string;
@@ -186,7 +193,7 @@ export async function promptConfigWizard(): Promise<ConfigWizardAnswers> {
       type: 'input',
       name: 'model',
       message: 'Enter model name:',
-      default: 'google/gemma-4-26b-a4b-it:free',
+      default: DEFAULT_MODELS[provider] || 'openrouter/free',
     },
   ]);
 

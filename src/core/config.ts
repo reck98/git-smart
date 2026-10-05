@@ -5,7 +5,7 @@ import { GitSmartConfig, Provider, ConfigValidationError, ProviderKeyedConfig } 
 
 const DEFAULT_CONFIG: GitSmartConfig = {
   provider: 'openrouter',
-  model: 'google/gemma-4-26b-a4b-it:free',
+  model: 'openrouter/free',
   conventionalCommits: true,
   autoPush: false,
   showSummary: true,

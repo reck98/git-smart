@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { isGitRepo, gitInit, hasGitIgnore, getRemoteUrl, addRemote } from '../core/git.js';
+import { isGitRepo, gitInit, hasGitIgnore, getRemoteUrl, addRemote, isFirstCommit } from '../core/git.js';
 import { promptInitOrExit, promptGitignore, promptAddRemote, promptRemoteUrl, GitignoreOption } from '../prompts/index.js';
 import { getGitignoreTemplate } from '../utils/templates.js';
 import { writeFileSync, readFileSync, appendFileSync, existsSync } from 'node:fs';
@@ -57,8 +57,14 @@ export async function runPreChecks(): Promise<PreCheckResult> {
   spinner.stop();
 
   if (!gitSmartIgnored) {
-    const eol = existsSync(gitignorePath) ? '\n' : '';
-    appendFileSync(gitignorePath, `${eol}.git-smart.json\n`, 'utf-8');
+    let prefix = '';
+    if (existsSync(gitignorePath)) {
+      const content = readFileSync(gitignorePath, 'utf-8');
+      if (content.length > 0 && !content.endsWith('\n')) {
+        prefix = '\n';
+      }
+    }
+    appendFileSync(gitignorePath, `${prefix}.git-smart.json\n`, 'utf-8');
     console.log(chalk.green('✓ Added .git-smart.json to .gitignore.'));
   }
 
@@ -83,18 +89,17 @@ export async function runPreChecks(): Promise<PreCheckResult> {
   }
 
   spinner.start('Checking first commit...');
-  let isFirstCommit = false;
+  let firstCommit = false;
   try {
-    const { isFirstCommit: check } = await import('../core/git.js');
-    isFirstCommit = await check();
+    firstCommit = await isFirstCommit();
   } catch {
-    isFirstCommit = true;
+    firstCommit = true;
   }
   spinner.stop();
 
-  if (isFirstCommit) {
+  if (firstCommit) {
     console.log(chalk.cyan('ℹ First commit detected.'));
   }
 
-  return { hasRemote, isFirstCommit };
+  return { hasRemote, isFirstCommit: firstCommit };
 }

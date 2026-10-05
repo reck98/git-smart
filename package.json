@@ -1,6 +1,6 @@
 {
   "name": "@reck98/git-smart",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "AI-powered Git workflow assistant that generates production-quality commit messages, summarizes code changes, and streamlines Git operations.",
   "type": "module",
   "bin": {

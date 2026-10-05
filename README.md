@@ -3,7 +3,7 @@
 AI-powered Git workflow assistant that generates production-quality commit messages, summarizes code changes, and streamlines Git operations.
 
 ```bash
-npm install -g @reck98/git-smart@1.1.0
+npm install -g @reck98/git-smart@1.1.1
 ```
 
 ---
@@ -30,7 +30,7 @@ npm install -g @reck98/git-smart@1.1.0
 
 ```bash
 # Install globally
-npm install -g @reck98/git-smart@1.1.0
+npm install -g @reck98/git-smart@1.1.1
 
 # Run the config wizard (required before first use)
 git-smart config
@@ -100,13 +100,13 @@ END
 ### Global (recommended)
 
 ```bash
-npm install -g @reck98/git-smart@1.1.0
+npm install -g @reck98/git-smart@1.1.1
 ```
 
 ### npx (no install)
 
 ```bash
-npx @reck98/git-smart@1.1.0
+npx @reck98/git-smart@1.1.1
 ```
 
 ### From source
@@ -192,7 +192,7 @@ Create `.git-smart.json` in your project root:
 ```json
 {
   "provider": "openrouter",
-  "model": "google/gemma-4-26b-a4b-it:free",
+  "model": "openrouter/free",
   "conventionalCommits": true,
   "autoPush": false,
   "showSummary": true,
@@ -210,7 +210,7 @@ Create `.git-smart.json` in your project root:
 | Option | Default | Description |
 |---|---|---|
 | `provider` | `openrouter` | Active LLM provider |
-| `model` | `google/gemma-4-26b-a4b-it:free` | Model name for the active provider |
+| `model` | `openrouter/free` | Model name for the active provider |
 | `conventionalCommits` | `true` | Generate Conventional Commit messages |
 | `autoPush` | `false` | Automatically push after commit |
 | `showSummary` | `true` | Display AI-generated summary before committing |
