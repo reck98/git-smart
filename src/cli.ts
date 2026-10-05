@@ -11,6 +11,7 @@ import { runCommit } from './commands/commit.js';
 import { runPush } from './commands/push.js';
 import { runHistory } from './commands/history.js';
 import { isFirstRun, assertConfigured, getActiveProvider } from './core/config.js';
+import { promptSetupConfig } from './prompts/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8')) as { version: string };
@@ -76,10 +77,15 @@ export function createCLI(): Command {
         if (isFirstRun()) {
           console.log(chalk.cyan('\n  Welcome to git-smart.\n'));
           console.log('  No configuration found.\n');
-          console.log('  Run:\n');
-          console.log(chalk.bold('    git-smart config'));
-          console.log('\n  to get started.\n');
-          process.exit(1);
+          const shouldSetup = await promptSetupConfig();
+          if (shouldSetup) {
+            await runConfigWizard(false);
+          } else {
+            console.log(chalk.dim('\n  Run:'));
+            console.log(chalk.bold('    git-smart config'));
+            console.log(chalk.dim('\n  whenever you are ready.\n'));
+            process.exit(0);
+          }
         }
         assertConfigured();
         await runPreChecks();

@@ -11,6 +11,70 @@ export interface PreCheckResult {
   isFirstCommit: boolean;
 }
 
+export function detectProjectEnvironment(): GitignoreOption {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, 'package.json'))) return 'node';
+  if (
+    existsSync(join(cwd, 'requirements.txt')) ||
+    existsSync(join(cwd, 'pyproject.toml')) ||
+    existsSync(join(cwd, 'Pipfile')) ||
+    existsSync(join(cwd, 'setup.py'))
+  ) {
+    return 'python';
+  }
+  if (
+    existsSync(join(cwd, 'pom.xml')) ||
+    existsSync(join(cwd, 'build.gradle')) ||
+    existsSync(join(cwd, 'build.gradle.kts'))
+  ) {
+    return 'java';
+  }
+  if (existsSync(join(cwd, 'go.mod'))) return 'go';
+  if (existsSync(join(cwd, 'Cargo.toml'))) return 'rust';
+  if (existsSync(join(cwd, 'composer.json'))) return 'php';
+  if (existsSync(join(cwd, 'Gemfile'))) return 'ruby';
+  return 'node';
+}
+
+export async function ensureGitIgnore(): Promise<void> {
+  const gitignorePath = join(process.cwd(), '.gitignore');
+  const ignoreExists = await hasGitIgnore();
+
+  if (!ignoreExists) {
+    console.log(chalk.yellow('\n  No .gitignore file found.'));
+    const detected = detectProjectEnvironment();
+    const option: GitignoreOption = await promptGitignore(detected);
+    if (option !== 'skip') {
+      const template = getGitignoreTemplate(option);
+      if (template) {
+        writeFileSync(gitignorePath, template.trim() + '\n', 'utf-8');
+        console.log(chalk.green(`  ✓ .gitignore generated for ${option}.`));
+      }
+    }
+  } else {
+    console.log(chalk.green('  ✓ .gitignore exists.'));
+  }
+
+  const hasIgnoreFile = existsSync(gitignorePath);
+  let gitSmartIgnored = false;
+  if (hasIgnoreFile) {
+    const content = readFileSync(gitignorePath, 'utf-8');
+    gitSmartIgnored = content.split(/\r?\n/).some(line => line.trim() === '.git-smart.json');
+  }
+
+  if (!gitSmartIgnored) {
+    let prefix = '';
+    if (hasIgnoreFile) {
+      const content = readFileSync(gitignorePath, 'utf-8');
+      if (content.length > 0 && !content.endsWith('\n')) {
+        prefix = '\n';
+      }
+    }
+    appendFileSync(gitignorePath, `${prefix}.git-smart.json\n`, 'utf-8');
+    console.log(chalk.green('  ✓ Added .git-smart.json to .gitignore.'));
+  }
+}
+
 export async function runPreChecks(): Promise<PreCheckResult> {
   const spinner = ora();
 
@@ -30,43 +94,8 @@ export async function runPreChecks(): Promise<PreCheckResult> {
   }
 
   spinner.start('Checking .gitignore...');
-  const ignoreExists = await hasGitIgnore();
   spinner.stop();
-
-  if (!ignoreExists) {
-    console.log(chalk.yellow('No .gitignore file found.'));
-    const option: GitignoreOption = await promptGitignore();
-    if (option !== 'skip') {
-      const template = getGitignoreTemplate(option);
-      if (template) {
-        writeFileSync(join(process.cwd(), '.gitignore'), template, 'utf-8');
-        console.log(chalk.green(`✓ .gitignore generated for ${option}.`));
-      }
-    }
-  } else {
-    console.log(chalk.green('✓ .gitignore exists.'));
-  }
-
-  spinner.start('Checking .git-smart.json in .gitignore...');
-  const gitignorePath = join(process.cwd(), '.gitignore');
-  let gitSmartIgnored = false;
-  if (existsSync(gitignorePath)) {
-    const content = readFileSync(gitignorePath, 'utf-8');
-    gitSmartIgnored = content.split('\n').some(line => line.trim() === '.git-smart.json');
-  }
-  spinner.stop();
-
-  if (!gitSmartIgnored) {
-    let prefix = '';
-    if (existsSync(gitignorePath)) {
-      const content = readFileSync(gitignorePath, 'utf-8');
-      if (content.length > 0 && !content.endsWith('\n')) {
-        prefix = '\n';
-      }
-    }
-    appendFileSync(gitignorePath, `${prefix}.git-smart.json\n`, 'utf-8');
-    console.log(chalk.green('✓ Added .git-smart.json to .gitignore.'));
-  }
+  await ensureGitIgnore();
 
   spinner.start('Checking remote...');
   const remoteUrl = await getRemoteUrl();

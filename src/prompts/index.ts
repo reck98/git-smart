@@ -19,25 +19,38 @@ export async function promptInitOrExit(): Promise<'init' | 'exit'> {
 export type GitignoreOption = 'node' | 'python' | 'go' | 'php' | 'ruby' | 'rust' | 'java' | 'skip';
 export type StageChoice = 'all' | 'none' | 'select';
 
-export async function promptGitignore(): Promise<GitignoreOption> {
+export async function promptGitignore(defaultOption: GitignoreOption = 'node'): Promise<GitignoreOption> {
   const { option } = await inquirer.prompt<{ option: GitignoreOption }>([
     {
       type: 'list',
       name: 'option',
-      message: 'No .gitignore file found. Generate one?',
+      message: 'No .gitignore file found. Select your project environment to generate one:',
+      default: defaultOption,
       choices: [
-        { name: 'Node', value: 'node' },
-        { name: 'Python', value: 'python' },
-        { name: 'Go', value: 'go' },
-        { name: 'PHP', value: 'php' },
-        { name: 'Ruby', value: 'ruby' },
-        { name: 'Rust', value: 'rust' },
-        { name: 'Java', value: 'java' },
-        { name: 'Skip', value: 'skip' },
+        { name: 'Node.js (node_modules, dist, env, logs)', value: 'node' },
+        { name: 'Python (venv, pycache, eggs, dist)', value: 'python' },
+        { name: 'Java (target, class, jar, build)', value: 'java' },
+        { name: 'Go (binaries, test outputs, vendor)', value: 'go' },
+        { name: 'Rust (target, Cargo.lock)', value: 'rust' },
+        { name: 'PHP (vendor, env, cache)', value: 'php' },
+        { name: 'Ruby (bundle, gems, env)', value: 'ruby' },
+        { name: 'Skip (ignore only .git-smart.json)', value: 'skip' },
       ],
     },
   ]);
   return option;
+}
+
+export async function promptSetupConfig(): Promise<boolean> {
+  const { setup } = await inquirer.prompt<{ setup: boolean }>([
+    {
+      type: 'confirm',
+      name: 'setup',
+      message: 'Would you like to run the configuration wizard now?',
+      default: true,
+    },
+  ]);
+  return setup;
 }
 
 export async function promptAddRemote(): Promise<'yes' | 'no'> {

@@ -3,7 +3,7 @@
 AI-powered Git workflow assistant that generates production-quality commit messages, summarizes code changes, and streamlines Git operations.
 
 ```bash
-npm install -g @reck98/git-smart@1.1.1
+npm install -g @reck98/git-smart@1.1.2
 ```
 
 ---
@@ -30,7 +30,7 @@ npm install -g @reck98/git-smart@1.1.1
 
 ```bash
 # Install globally
-npm install -g @reck98/git-smart@1.1.1
+npm install -g @reck98/git-smart@1.1.2
 
 # Run the config wizard (required before first use)
 git-smart config
@@ -100,13 +100,13 @@ END
 ### Global (recommended)
 
 ```bash
-npm install -g @reck98/git-smart@1.1.1
+npm install -g @reck98/git-smart@1.1.2
 ```
 
 ### npx (no install)
 
 ```bash
-npx @reck98/git-smart@1.1.1
+npx @reck98/git-smart@1.1.2
 ```
 
 ### From source

@@ -10,6 +10,7 @@ import {
 import { GitSmartConfig, Provider, PROVIDERS } from '../core/types.js';
 import { promptConfigWizard, promptAdditionalProviderKey, promptUseGlobalConfig } from '../prompts/index.js';
 import { getRemoteUrl, getCurrentBranch, isGitRepo } from '../core/git.js';
+import { ensureGitIgnore } from './prechecks.js';
 
 export async function runConfigWizard(global = false): Promise<void> {
   const globalExists = existsSync(globalConfigPath());
@@ -32,6 +33,7 @@ export async function runConfigWizard(global = false): Promise<void> {
       config.providers = providers;
 
       saveConfig(config);
+      await ensureGitIgnore();
 
       console.log(chalk.green('\n  Global config copied to local config.\n'));
 
@@ -78,6 +80,7 @@ export async function runConfigWizard(global = false): Promise<void> {
     saveGlobalConfig(config);
   } else {
     saveConfig(config);
+    await ensureGitIgnore();
   }
 
   const label = global ? 'Global' : 'Local';

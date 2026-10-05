@@ -1,4 +1,6 @@
 import simpleGit from 'simple-git';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { DiffStats, RepoState } from './types.js';
 
 const git = simpleGit();
@@ -17,6 +19,9 @@ export async function gitInit(): Promise<void> {
 }
 
 export async function hasGitIgnore(): Promise<boolean> {
+  if (existsSync(join(process.cwd(), '.gitignore'))) {
+    return true;
+  }
   try {
     const files = await git.raw(['ls-files', '--others', '--exclude-standard', '.gitignore']);
     const rootFiles = await git.raw(['ls-files', '.gitignore']);
